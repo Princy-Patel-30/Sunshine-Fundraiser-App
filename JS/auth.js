@@ -14,7 +14,7 @@ function toggleForm() {
 function getNextUserId() {
     let lastUserId = localStorage.getItem("lastUserId") || 0;
     let newUserId = parseInt(lastUserId) + 1;
-    localStorage.setItem("lastUserId", newUserId); // Save updated ID
+    localStorage.setItem("lastUserId", newUserId); //id
     return newUserId;
 }
 
