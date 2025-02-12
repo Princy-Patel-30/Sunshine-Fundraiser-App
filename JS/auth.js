@@ -104,7 +104,7 @@ function registerUser() {
         alert("NGO registered successfully with NGO ID: " + ngoId);
         localStorage.setItem("loggedInNgo", ngo.name);
         //localStorage.setItem("loggedInNgo", ngo.id);
-        window.location.href = "/pages/ngo/detailsngo.html"; 
+        window.location.href = "/pages/ngo/detailsngo.html";
     } else {
         console.log("Invalid role selected:", role);
     }
