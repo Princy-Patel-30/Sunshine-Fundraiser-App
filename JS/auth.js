@@ -43,7 +43,11 @@ function loginUser() {
         if (foundUser) {
             localStorage.setItem("loggedInUser", foundUser.name);
             alert("User Login Successful!");
+<<<<<<< Updated upstream
+            window.location.href = "/pages/user/Dashboard.html"; // Redirect to User Dashboard
+=======
             window.location.href = "/pages/Dashboard.html"; // Redirect to User Dashboard
+>>>>>>> Stashed changes
         } else {
             alert("Invalid Email or Password for User!");
         }
@@ -54,7 +58,7 @@ function loginUser() {
         if (foundNgo) {
             localStorage.setItem("loggedInNgo", foundNgo.name);
             alert("NGO Login Successful!");
-            window.location.href = "/pages/Dashboard.html"; // Redirect to NGO Dashboard
+            window.location.href = "/pages/ngo/Dashboard.html"; // Redirect to NGO Dashboard
         } else {
             alert("Invalid Email or Password for NGO!");
         }
@@ -84,6 +88,7 @@ function registerUser() {
         users.push(newUser);
         localStorage.setItem("users", JSON.stringify(users));
         alert("User registered successfully with User ID: " + userId);
+        window.location.href = "/pages/user/Dashboard.html";
         
     } else if (role === "NGO") {
         let NGOs = JSON.parse(localStorage.getItem("NGO")) || []; // Changed variable name to be more clear
@@ -100,11 +105,10 @@ function registerUser() {
         localStorage.setItem("NGO", JSON.stringify(NGOs));
         alert("NGO registered successfully with NGO ID: " + ngoId);
 
-        window.location.href = "/pages/detailsngo.html"; 
+        window.location.href = "/pages/ngo/detailsngo.html"; 
     } else {
         console.log("Invalid role selected:", role);
     }
-    
     
 }
 

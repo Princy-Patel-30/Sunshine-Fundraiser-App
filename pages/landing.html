@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NGO Dashboard</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .card {
+      margin: 20px;
+      height: 100%;
+      /* Ensures all cards take the same height */
+    }
+
+    .card-body {
+
+      justify-content: space-between;
+      /* Distributes space evenly */
+    }
+
+    .login-signup {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1 class="text-center my-4">NGO Dashboard</h1>
+    <div class="login-signup">
+      <a href="login.html" class="btn btn-secondary">Login/Sign Up</a>
+    </div>
+    <div class="row" id="ngoCardsContainer"></div>
+  </div>
+
+  <script>
+    function loadNgos() {
+      const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
+      const container = document.getElementById('ngoCardsContainer');
+      ngos.forEach((ngo) => {
+        const card = document.createElement('div');
+        card.className = 'col-md-4';
+        card.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">${ngo.name}</h5>
+                        <p class="card-text">${ngo.description}</p>
+                        <br>
+                        <br>
+                        <h6 class="card-subtitle mb-2 text-muted">Charities:</h6>
+                        <ul class="list-group">
+                            ${ngo.charities.map(charity => `<li class="list-group-item">${charity}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+        container.appendChild(card);
+      });
+    }
+
+    window.onload = loadNgos;
+  </script>
+
+</body>
+
+</html>
