@@ -3,9 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
+  <title>Sunshine-fundraiser</title>
   
+</head>
+
+<body>
+  <div class="container">
+    <div class="form-container" id="login-form">
+      <h2>Login</h2>
+
+      <input type="text" id="login-username" placeholder="Username" required><br><br>
+      <input type="password" id="login-password" placeholder="Password" required><br><br>
+
+      <label for="role">Select Role:</label>
+      <select name="role" id="login-role">
+        <option value="User">User</option>
+        <option value="NGO">NGO</option>
+      </select><br><br>
+
+      <button onclick="loginUser()">Login</button>
+      <p>Don't have an account? <a href="#" onclick="toggleForm()">Sign Up</a></p>
+    </div>
+
+    <div class="form-container" id="signup-form" style="display: none;">
+      <h2>Sign Up</h2>
+
+      <input type="text" id="signup-username" placeholder="Username" required><br><br>
+      <input type="password" id="signup-password" placeholder="Password" required><br><br>
+      <input type="email" id="email" placeholder="email" required><br><br>
+
+      <label for="role">Select Role:</label>
+      <select name="role" id="signup-role">
+        <option value="User">User</option>
+        <option value="NGO">NGO</option>
+      </select><br><br>
+
+
+      <button onclick="registerUser()">Sign Up</button>
+      <p>Already have an account? <a href="#" onclick="toggleForm()">Login</a></p>
+    </div>
+  </div>
+
+  <script src="/assets/JS/auth.js"></script>
 </body>
+
 </html>
