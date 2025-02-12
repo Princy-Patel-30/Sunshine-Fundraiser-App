@@ -100,12 +100,13 @@ function registerUser() {
         };
 
         NGOs.push(newNgo);
-        localStorage.setItem("NGO", JSON.stringify(NGOs));
+        localStorage.setItem("loggedInNgo", newNgo.name);
+
         alert("NGO registered successfully with NGO ID: " + ngoId);
-        localStorage.setItem("loggedInNgo", ngo.name);
-        //localStorage.setItem("loggedInNgo", ngo.id);
-        window.location.href = "/pages/ngo/detailsngo.html";
-    } else {
+        localStorage.setItem("loggedInNgo", newNgo.name);
+
+        window.location.href = "/pages/ngo/detailsngo.html";   
+        } else {
         console.log("Invalid role selected:", role);
     }
     

@@ -37,40 +37,23 @@
 <body>
 
   <div class="container">
-    <h1 class="text-center my-4">NGO Dashboard</h1>
-    <form id="charityForm">
-      <div class="form-group">
-        <label for="charityName">Charity Name</label>
-        <input type="text" class="form-control" id="charityName" required>
-      </div>
-      <div class="form-group">
-        <label for="charityDescription">Charity Description</label>
-        <textarea class="form-control" id="charityDescription" rows="3" required></textarea>
-      </div>
-      <div class="form-group">
-        <label for="goalAmount">Goal Amount</label>
-        <input type="number" class="form-control" id="goalAmount" required>
-      </div>
-      <div class="form-group">
-        <label for="expiryDate">Expiry Date</label>
-        <input type="date" class="form-control" id="expiryDate" required>
-      </div>
-      <button type="submit" class="btn btn-primary">Add Charity</button>
-      <button class="btn btn-success mt-3" onclick="goToDashboard()">Done</button> 
-      <a href="Dashboard.html" class="btn btn-secondary mt-3">Back to Dashboard</a>
-  </div>
-    </form>
+    <h1 class="text-center my-4" id="ngoName">${}</h1>
 
-    <h2 class="my-4">Existing Charities</h2>
+    <h2 class="my-4">Charities for <span id="ngoDisplayName"></span></h2>
     <ul id="charityList" class="list-group"></ul>
+
+    <a href="Dashboard.html" class="btn btn-secondary mt-3">Back to Dashboard</a>
   </div>
 
   <script>
     const ngoId = new URLSearchParams(window.location.search).get('id');
-    function goToDashboard() {
-        window.location.href = 'pages\ngo\Dashboard.html'; 
-    }
-    // Load existing charities for the NGO
+    const loggedInNgo = localStorage.getItem("loggedInNgo");
+
+    // Update the NGO Name in Dashboard
+    document.getElementById('ngoName').textContent = loggedInNgo + " Dashboard";
+    document.getElementById('ngoDisplayName').textContent = loggedInNgo;
+
+    // Load existing charities for the logged-in NGO
     function loadCharities() {
       const charities = JSON.parse(localStorage.getItem('charities')) || {};
       const charityList = document.getElementById('charityList');
@@ -98,40 +81,12 @@
       }
     }
 
-    // Add new charity
-    document.getElementById('charityForm').addEventListener('submit', function (event) {
-      event.preventDefault();
-
-      const charityName = document.getElementById('charityName').value;
-      const charityDescription = document.getElementById('charityDescription').value;
-      const goalAmount = document.getElementById('goalAmount').value;
-      const expiryDate = document.getElementById('expiryDate').value;
-      const loggedInNgo = localStorage.getItem("loggedInNgo");
-
-      const charityData = {
-        name: charityName,
-        description: charityDescription,
-        goalAmount: goalAmount,
-        expiryDate: expiryDate,
-        ngoname: loggedInNgo
-      };
-
-      const charities = JSON.parse(localStorage.getItem('charities')) || {};
-      if (!charities[ngoId]) {
-        charities[ngoId] = [];
-      }
-      charities[ngoId].push(charityData);
-      localStorage.setItem('charities', JSON.stringify(charities));
-
-      loadCharities();
-      document.getElementById('charityForm').reset();
-    });
-
     // Edit charity
     function editCharity(index) {
       const charities = JSON.parse(localStorage.getItem('charities')) || {};
       const charity = charities[ngoId][index];
 
+      // Redirect to edit page (if needed) or modify existing charity in localStorage
       document.getElementById('charityName').value = charity.name;
       document.getElementById('charityDescription').value = charity.description;
       document.getElementById('goalAmount').value = charity.goalAmount;
