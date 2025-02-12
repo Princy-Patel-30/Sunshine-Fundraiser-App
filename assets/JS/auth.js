@@ -62,7 +62,7 @@ function registerUser() {
         NGOs.push(newNgo);
         localStorage.setItem("NGO", JSON.stringify(NGOs));
         alert("NGO registered successfully with NGO ID: " + ngoId);
-        //window.location.href = "pages\login.html";
+        window.location.href = "pages\ngo.html";
     } else {
         console.log("Invalid role selected:", role);
     }
