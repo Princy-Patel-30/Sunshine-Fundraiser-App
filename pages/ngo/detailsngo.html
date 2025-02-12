@@ -35,21 +35,33 @@
 <script>
     document.getElementById('ngoForm').addEventListener('submit', function(event) {
         event.preventDefault();
+        let loggedInNgo = localStorage.getItem("loggedInNgo");
+        let Userid = localStorage.getItem("loggedInNgo");
 
         const ngoName = document.getElementById('ngoName').value;
         const ngoDescription = document.getElementById('ngoDescription').value;
         const charities = document.getElementById('charities').value.split(',').map(item => item.trim());
 
-        const ngoData = {
+        if (!loggedInNgo) {
+            alert("No NGO is logged in!");
+            window.location.href = "index.html";
+            return;
+        }
+
+        let ngos = JSON.parse(localStorage.getItem("ngos")) || [];
+        let ngo = ngos.find(n => n.name === loggedInNgo);
+
+       const ngoData = {
             name: ngoName,
+            username : Userid,
             description: ngoDescription,
             charities: charities
         };
 
         // Store the NGO data in local storage
-        let ngos = JSON.parse(localStorage.getItem('ngos')) || [];
-        ngos.push(ngoData);
-        localStorage.setItem('ngos', JSON.stringify(ngos));
+        let ngoes = JSON.parse(localStorage.getItem('ngos')) || [];
+        ngoes.push(ngoData);
+        localStorage.setItem('ngos', JSON.stringify(ngoes));
 
         // Redirect to the dashboard
         window.location.href = 'dashboard.html';
