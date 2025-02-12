@@ -106,7 +106,6 @@ function registerUser() {
         console.log("Invalid role selected:", role);
     }
     
-    
 }
 
 
