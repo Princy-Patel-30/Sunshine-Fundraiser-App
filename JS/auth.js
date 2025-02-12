@@ -26,6 +26,43 @@ function getNextNgoId() {
 }
 
 
+function loginUser() {
+    let username = document.getElementById("login-username").value.trim();
+    let password = document.getElementById("login-password").value.trim();
+    let role = document.getElementById("login-role").value;
+    
+    if (!email || !password) {
+        alert("Please enter both email and password!");
+        return;
+    }
+
+    if (role === "User") {
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        let foundUser = users.find(user => user.name === username && user.password === password);
+
+        if (foundUser) {
+            localStorage.setItem("loggedInUser", foundUser.name);
+            alert("User Login Successful!");
+            window.location.href = "pages\Dashboard.html"; // Redirect to User Dashboard
+        } else {
+            alert("Invalid Email or Password for User!");
+        }
+    } else if (role === "NGO") {
+        let ngos = JSON.parse(localStorage.getItem("NGO")) || [];
+        let foundNgo = ngos.find(ngo => ngo.name === username && ngo.password === password);
+
+        if (foundNgo) {
+            localStorage.setItem("loggedInNgo", foundNgo.name);
+            alert("NGO Login Successful!");
+            window.location.href = "/pages/Dashboard.html"; // Redirect to NGO Dashboard
+        } else {
+            alert("Invalid Email or Password for NGO!");
+        }
+    }
+}
+
+
+
 
 function registerUser() {
     let username = document.getElementById("signup-username").value;
