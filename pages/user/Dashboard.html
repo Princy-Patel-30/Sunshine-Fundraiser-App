@@ -8,26 +8,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
     <style>
         body {
-            background-color: #96a7b9;
+            background-color: #021c37;
         }
         .card {
             margin: 20px;
-            height: 100%; /* Ensures all cards take the same height */
+            height: 100%; 
         }
         .card-body {
-            justify-content: space-between; /* Distributes space evenly */
+            justify-content: space-between; 
         }
         .login-signup {
             position: absolute;
+         
             top: 20px;
             right: 20px;
         }
-        .card-title{
+        h1 {
+            color: white; 
+        }
+        .card-title {
             text-align: center;
         }
-        .card-text{
+        .card-text {
             text-align: justify;
         }
+
     </style>
 </head>
 <body>
@@ -43,7 +48,7 @@
     <div class="form-group">
         <div class="input-group">
             <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fas fa-search"></i></span> <!-- Search Icon -->
+                <span class="input-group-text"><i class="fas fa-search"></i></span> 
             </div>
             <input type="text" id="searchInput" class="form-control" placeholder="Search charities by name..." onkeyup="searchCharities()">
         </div>
