@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NGO Dashboard</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .charity-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      background-color: white;
+      min-height: 60px;
+    }
+
+    .charity-details {
+      flex: 1;
+    }
+
+    .charity-actions {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1 class="text-center my-4">NGO Dashboard</h1>
+    <form id="charityForm">
+      <div class="form-group">
+        <label for="charityName">Charity Name</label>
+        <input type="text" class="form-control" id="charityName" required>
+      </div>
+      <div class="form-group">
+        <label for="charityDescription">Charity Description</label>
+        <textarea class="form-control" id="charityDescription" rows="3" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="goalAmount">Goal Amount</label>
+        <input type="number" class="form-control" id="goalAmount" required>
+      </div>
+      <div class="form-group">
+        <label for="expiryDate">Expiry Date</label>
+        <input type="date" class="form-control" id="expiryDate" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Charity</button>
+      <button class="btn btn-success mt-3" onclick="goToDashboard()">Done</button> 
+      <a href="Dashboard.html" class="btn btn-secondary mt-3">Back to Dashboard</a>
+  </div>
+    </form>
+
+    <h2 class="my-4">Existing Charities</h2>
+    <ul id="charityList" class="list-group"></ul>
+  </div>
+
+  <script>
+    const ngoId = new URLSearchParams(window.location.search).get('id');
+    function goToDashboard() {
+        window.location.href = 'pages\ngo\Dashboard.html'; 
+    }
+    // Load existing charities for the NGO
+    function loadCharities() {
+      const charities = JSON.parse(localStorage.getItem('charities')) || {};
+      const charityList = document.getElementById('charityList');
+      charityList.innerHTML = '';
+
+      if (charities[ngoId]) {
+        charities[ngoId].forEach((charity, index) => {
+          const listItem = document.createElement('li');
+          listItem.className = 'charity-item';
+
+          listItem.innerHTML = `
+                    <div class="charity-details">
+                        <strong>${charity.name}</strong> <br>
+                        <small>${charity.description}</small> <br>
+                        <small><strong>Goal:</strong> $${charity.goalAmount} | <strong>Expiry:</strong> ${charity.expiryDate}</small>
+                    </div>
+                    <div class="charity-actions">
+                        <button class="btn btn-warning btn-sm" onclick="editCharity(${index})">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteCharity(${index})">Delete</button>
+                    </div>
+                `;
+
+          charityList.appendChild(listItem);
+        });
+      }
+    }
+
+    // Add new charity
+    document.getElementById('charityForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const charityName = document.getElementById('charityName').value;
+      const charityDescription = document.getElementById('charityDescription').value;
+      const goalAmount = document.getElementById('goalAmount').value;
+      const expiryDate = document.getElementById('expiryDate').value;
+      const loggedInNgo = localStorage.getItem("loggedInNgo");
+
+      const charityData = {
+        name: charityName,
+        description: charityDescription,
+        goalAmount: goalAmount,
+        expiryDate: expiryDate,
+        ngoname: loggedInNgo
+      };
+
+      const charities = JSON.parse(localStorage.getItem('charities')) || {};
+      if (!charities[ngoId]) {
+        charities[ngoId] = [];
+      }
+      charities[ngoId].push(charityData);
+      localStorage.setItem('charities', JSON.stringify(charities));
+
+      loadCharities();
+      document.getElementById('charityForm').reset();
+    });
+
+    // Edit charity
+    function editCharity(index) {
+      const charities = JSON.parse(localStorage.getItem('charities')) || {};
+      const charity = charities[ngoId][index];
+
+      document.getElementById('charityName').value = charity.name;
+      document.getElementById('charityDescription').value = charity.description;
+      document.getElementById('goalAmount').value = charity.goalAmount;
+      document.getElementById('expiryDate').value = charity.expiryDate;
+
+      // Remove charity from the list for editing
+      charities[ngoId].splice(index, 1);
+      localStorage.setItem('charities', JSON.stringify(charities));
+      loadCharities();
+    }
+
+    // Delete charity
+    function deleteCharity(index) {
+      const charities = JSON.parse(localStorage.getItem('charities')) || {};
+      charities[ngoId].splice(index, 1);
+      localStorage.setItem('charities', JSON.stringify(charities));
+      loadCharities();
+    }
+
+    // Initial load
+    loadCharities();
+  </script>
+
+</body>
+
+</html>
