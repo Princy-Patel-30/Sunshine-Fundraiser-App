@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charities</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-center my-4">Charities</h1>
+    <div id="charityTableContainer"></div>
+    <a href="index.html" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>
+
+<script>
+    function loadCharities() {
+        const selectedNgo = JSON.parse(localStorage.getItem('selectedNgo'));
+        const container = document.getElementById('charityTableContainer');
+
+        if (selectedNgo) {
+            const table = document.createElement('table');
+            table.className = 'table table-bordered';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Charity Name</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${selectedNgo.charities.map(charity => `
+                        <tr>
+                            <td>${charity}</td>
+                            <td>add description</td> 
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+            container.appendChild(table);
+        } else {
+            container.innerHTML = '<p>No NGO selected.</p>';
+        }
+    }
+
+    window.onload = loadCharities;
+</script>
+
+</body>
+</html>
