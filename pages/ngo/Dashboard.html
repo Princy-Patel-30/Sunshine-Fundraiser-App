@@ -56,6 +56,7 @@
         <input type="date" class="form-control" id="expiryDate" required>
       </div>
       <button type="submit" class="btn btn-primary">Add Charity</button>
+      
     </form>
 
     <h2 class="my-4">Existing Charities</h2>
@@ -63,8 +64,10 @@
   </div>
 
   <script>
-    const ngoId = new URLSearchParams(window.location.search).get('id'); // Get NGO ID from URL
-
+    const ngoId = new URLSearchParams(window.location.search).get('id');
+    function goToDashboard() {
+        window.location.href = 'pages\ngo\Dashboard.html'; 
+    }
     // Load existing charities for the NGO
     function loadCharities() {
       const charities = JSON.parse(localStorage.getItem('charities')) || {};
