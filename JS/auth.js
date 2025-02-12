@@ -43,7 +43,7 @@ function loginUser() {
         if (foundUser) {
             localStorage.setItem("loggedInUser", foundUser.name);
             alert("User Login Successful!");
-            window.location.href = "pages\Dashboard.html"; // Redirect to User Dashboard
+            window.location.href = "pages/Dashboard.html"; // Redirect to User Dashboard
         } else {
             alert("Invalid Email or Password for User!");
         }
@@ -100,7 +100,7 @@ function registerUser() {
         localStorage.setItem("NGO", JSON.stringify(NGOs));
         alert("NGO registered successfully with NGO ID: " + ngoId);
 
-        window.location.href = "\pages\detailsngo.html";
+        window.location.href = "/pages/detailsngo.html"; 
     } else {
         console.log("Invalid role selected:", role);
     }
