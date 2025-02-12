@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NGO Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
     <style>
         body {
             background-color: #96a7b9;
@@ -14,7 +15,6 @@
             height: 100%; /* Ensures all cards take the same height */
         }
         .card-body {
-          
             justify-content: space-between; /* Distributes space evenly */
         }
         .login-signup {
@@ -22,49 +22,107 @@
             top: 20px;
             right: 20px;
         }
+        .card-title{
+            text-align: center;
+        }
+        .card-text{
+            text-align: justify;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">X
-    <h1 class="text-center my-4">Your 1 Rupee can save life ! </h1>
+<div class="container">
+    <h1 class="text-center my-4">Your 1 Rupee can save life!</h1>
     <h1 class="text-center my-4">NGO Dashboard</h1>
+    
     <div class="login-signup">
         <a href="login.html" class="btn btn-secondary">Login/Sign Up</a>
     </div>
+    
+    <div class="form-group">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-search"></i></span> <!-- Search Icon -->
+            </div>
+            <input type="text" id="searchInput" class="form-control" placeholder="Search charities by name..." onkeyup="searchCharities()">
+        </div>
+    </div>
+    
     <div class="row" id="ngoCardsContainer"></div>
 </div>
 
-<<<<<<< Updated upstream:pages/user/Dashboard.html
 <script>
     function loadNgos() {
         const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
         const container = document.getElementById('ngoCardsContainer');
+        container.innerHTML = ''; 
+
         ngos.forEach((ngo) => {
             const card = document.createElement('div');
             card.className = 'col-md-4';
+            const firstCharity = ngo.charities[0]; // Get the first charity
             card.innerHTML = `
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">${ngo.name}</h5>
                         <p class="card-text">${ngo.description}</p>
-                        <br>
-                        <br>
-                        <h6 class="card-subtitle mb-2 text-muted">Charities:</h6>
-                        <ul class="list-group">
-                            ${ngo.charities.map(charity => `<li class="list-group-item">${charity}</li>`).join('')}
-                        </ul>
+                        <h6 class="card-subtitle mb-2 text-muted">Charity:</h6>
+                        <p class="list-group-item">${firstCharity}</p>
+                        <div class="mt-auto">
+                        <button class="btn btn-dark mt-3" onclick="donate('${ngo.name}')">Donate</button>
+                        <button class="btn btn-info mt-3" onclick="viewMoreCharities(${ngos.indexOf(ngo)})">View More Charities</button>
                     </div>
+                </div>
                 </div>
             `;
             container.appendChild(card);
         });
     }
 
+    function searchCharities() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
+        const container = document.getElementById('ngoCardsContainer');
+        container.innerHTML = ''; // Clear previous content
+
+        ngos.forEach((ngo) => {
+            const matches = ngo.charities.some(charity => charity.toLowerCase().includes(input));
+            if (matches) {
+                const card = document.createElement('div');
+                card.className = 'col-md-4';
+                const firstCharity = ngo.charities[0]; // Get the first charity
+                card.innerHTML = `
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">${ngo.name}</h5>
+                            <p class="card-text">${ngo.description}</p>
+                            <h6 class="card-subtitle mb-2 text-muted">Charity:</h6>
+                            <p class="list-group-item">${firstCharity}</p>
+                           <div class="mt-auto">
+                        <button class="btn btn-dark mt-3" onclick="donate('${ngo.name}')">Donate</button>
+                        <button class="btn btn-info mt-3" onclick="viewMoreCharities(${ngos.indexOf(ngo)})">View More Charities</button>
+                    </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+        });
+    }
+
+    function donate(ngoName) {
+        alert(`Thank you for considering a donation to ${ngoName}!`);
+    }
+
+    function viewMoreCharities(ngoIndex) {
+        const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
+        const selectedNgo = ngos[ngoIndex];
+        localStorage.setItem('selectedNgo', JSON.stringify(selectedNgo)); // Store selected NGO in local storage
+        window.location.href = 'charity.html'; // Redirect to charity.html
+    }
+
     window.onload = loadNgos;
 </script>
 
-=======
->>>>>>> Stashed changes:pages/Dashboard.html
 </body>
 </html>
