@@ -43,11 +43,9 @@ function loginUser() {
         if (foundUser) {
             localStorage.setItem("loggedInUser", foundUser.name);
             alert("User Login Successful!");
-<<<<<<< Updated upstream
             window.location.href = "/pages/user/Dashboard.html"; // Redirect to User Dashboard
-=======
-            window.location.href = "/pages/Dashboard.html"; // Redirect to User Dashboard
->>>>>>> Stashed changes
+            
+
         } else {
             alert("Invalid Email or Password for User!");
         }
