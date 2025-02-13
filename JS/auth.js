@@ -25,6 +25,19 @@ function getNextNgoId() {
     return newNgoId;
 }
 
+function setFixedAdminCredentials() {
+    if (!localStorage.getItem("adminData")) {
+        const fixedAdmin = {
+            username: "admin",
+            password: "admin123", // Set your desired password
+            email: "admin@example.com"
+        };
+        localStorage.setItem("adminData", JSON.stringify(fixedAdmin));
+    }
+}
+
+// Call function when the script loads
+setFixedAdminCredentials();
 
 function loginUser() {
     let username = document.getElementById("login-username").value.trim();
@@ -60,10 +73,19 @@ function loginUser() {
         } else {
             alert("Invalid Email or Password for NGO!");
         }
+    } else if (role === "Admin") {
+        let adminData = JSON.parse(localStorage.getItem("adminData"));
+
+        if (adminData && adminData.username === username && adminData.password === password) {
+            localStorage.setItem("loggedInAdmin", adminData.username);
+            alert("Admin Login Successful!");
+            window.location.href = "/pages/admin/admin.html"; // Redirect to Admin Dashboard
+        } else {
+            alert("Invalid Admin Credentials!");
+        }
     }
+
 }
-
-
 
 
 function registerUser() {
