@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,109 +8,211 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        /* Existing styles */
         body {
             background-color: #96a7b9;
         }
+
         .card {
             margin: 20px;
             height: 100%;
         }
+
         .card-body {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
+
         .login-signup {
             position: absolute;
             top: 20px;
             right: 20px;
         }
+
         .card-title {
             text-align: center;
         }
+
         .card-text {
             text-align: justify;
         }
+
         .progress {
             height: 20px;
             margin: 10px 0;
         }
+
         .search-container {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
+
+        /* New pagination styles */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            gap: 10px;
+        }
+
+        .page-button {
+            padding: 5px 15px;
+            border: 1px solid #007bff;
+            background-color: white;
+            color: #007bff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .page-button.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .page-button:disabled {
+            border-color: #ccc;
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .items-per-page {
+            margin-left: 20px;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h1 class="text-center my-4">Your 1 Rupee can save life!</h1>
-    <h1 class="text-center my-4">NGO & Charity Dashboard</h1>
-    
-    <div class="login-signup">
-        <a href="../landing.html" class="btn btn-secondary">Logout</a>
-    </div>
-    
-    <div class="search-container">
-        <div class="form-group flex-grow-1">
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+    <div class="container">
+        <h1 class="text-center my-4">Your 1 Rupee can save life!</h1>
+        <h1 class="text-center my-4">NGO & Charity Dashboard</h1>
+
+        <div class="login-signup">
+            <a href="../landing.html" class="btn btn-secondary">Logout</a>
+        </div>
+
+        <div class="search-container">
+            <div class="form-group flex-grow-1">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input type="text" id="searchInput" class="form-control"
+                        placeholder="Search by NGO or charity name...">
                 </div>
-                <input type="text" id="searchInput" class="form-control" placeholder="Search by NGO or charity name...">
+            </div>
+            <select class="form-control" id="filterSelect" style="width: auto;">
+                <option value="all">All</option>
+                <option value="ngo">NGOs Only</option>
+                <option value="charity">Charities Only</option>
+            </select>
+            <div class="items-per-page">
+                <select class="form-control" id="itemsPerPage">
+                    <option value="6">6 per page</option>
+                    <option value="9">9 per page</option>
+                    <option value="12">12 per page</option>
+                </select>
             </div>
         </div>
-        <select class="form-control" id="filterSelect" style="width: auto;">
-            <option value="all">All</option>
-            <option value="ngo">NGOs Only</option>
-            <option value="charity">Charities Only</option>
-        </select>
+
+        <div class="row" id="cardsContainer"></div>
+
+        <div class="pagination-container">
+            <button id="prevPage" class="page-button">Previous</button>
+            <div id="pageNumbers"></div>
+            <button id="nextPage" class="page-button">Next</button>
+        </div>
     </div>
-    
-    <div class="row" id="cardsContainer"></div>
-</div>
 
-<script>
-    function loadContent() {
-        const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
-        const charities = JSON.parse(localStorage.getItem('charities'))?.null || [];
-        displayContent(ngos, charities);
-    }
+    <script>
+        // Pagination state
+        let currentPage = 1;
+        let itemsPerPage = 6;
 
-    function displayContent(ngos, charities) {
-        const container = document.getElementById('cardsContainer');
-        container.innerHTML = '';
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const filterValue = document.getElementById('filterSelect').value;
-
-        // Display NGOs if filter is 'all' or 'ngo'
-        if (filterValue === 'all' || filterValue === 'ngo') {
-            ngos.forEach((ngo, index) => {
-                if (ngo.name.toLowerCase().includes(searchTerm) || 
-                    ngo.description.toLowerCase().includes(searchTerm)) {
-                    const card = createNGOCard(ngo, index);
-                    container.appendChild(card);
-                }
-            });
+        function loadContent() {
+            const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
+            const charities = JSON.parse(localStorage.getItem('charities'))?.null || [];
+            displayContent(ngos, charities);
         }
 
-        // Display Charities if filter is 'all' or 'charity'
-        if (filterValue === 'all' || filterValue === 'charity') {
-            charities.forEach((charity, index) => {
-                if (charity.name.toLowerCase().includes(searchTerm) || 
-                    charity.description.toLowerCase().includes(searchTerm)) {
-                    const card = createCharityCard(charity, index);
-                    container.appendChild(card);
+        function displayContent(ngos, charities) {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filterValue = document.getElementById('filterSelect').value;
+
+            // Filter content based on search and filter
+            let filteredContent = [];
+
+            if (filterValue === 'all' || filterValue === 'ngo') {
+                filteredContent.push(...ngos.filter(ngo =>
+                    ngo.name.toLowerCase().includes(searchTerm) ||
+                    ngo.description.toLowerCase().includes(searchTerm)
+                ).map(ngo => ({ ...ngo, type: 'ngo' })));
+            }
+
+            if (filterValue === 'all' || filterValue === 'charity') {
+                filteredContent.push(...charities.filter(charity =>
+                    charity.name.toLowerCase().includes(searchTerm) ||
+                    charity.description.toLowerCase().includes(searchTerm)
+                ).map(charity => ({ ...charity, type: 'charity' })));
+            }
+
+            // Pagination calculations
+            const totalItems = filteredContent.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            // Get current page items
+            const currentItems = filteredContent.slice(startIndex, endIndex);
+
+            // Display current page items
+            currentItems.forEach(item => {
+                if (item.type === 'ngo') {
+                    container.appendChild(createNGOCard(item));
+                } else {
+                    container.appendChild(createCharityCard(item));
                 }
             });
-        }
-    }
 
-    function createNGOCard(ngo, index) {
-        const card = document.createElement('div');
-        card.className = 'col-md-4';
-        card.innerHTML = `
+            // Update pagination controls
+            updatePaginationControls(totalPages);
+        }
+
+        function updatePaginationControls(totalPages) {
+            const pageNumbers = document.getElementById('pageNumbers');
+            const prevButton = document.getElementById('prevPage');
+            const nextButton = document.getElementById('nextPage');
+
+            // Clear existing page numbers
+            pageNumbers.innerHTML = '';
+
+            // Add page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.className = `page-button ${i === currentPage ? 'active' : ''}`;
+                button.textContent = i;
+                button.onclick = () => {
+                    currentPage = i;
+                    loadContent();
+                };
+                pageNumbers.appendChild(button);
+            }
+
+            // Update prev/next buttons
+            prevButton.disabled = currentPage === 1;
+            nextButton.disabled = currentPage === totalPages || totalPages === 0;
+        }
+
+        // Existing card creation functions remain the same
+        function createNGOCard(ngo) {
+            const card = document.createElement('div');
+            card.className = 'col-md-4';
+            card.innerHTML = `
             <div class="card">
                 <div class="card-body">
                     <div class="card-header bg-primary text-white">
@@ -123,17 +226,17 @@
                 </div>
             </div>
         `;
-        return card;
-    }
+            return card;
+        }
 
-    function createCharityCard(charity, index) {
-        const currentDate = new Date();
-        const expiryDate = new Date(charity.expiryDate);
-        const daysLeft = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24));
-        
-        const card = document.createElement('div');
-        card.className = 'col-md-4';
-        card.innerHTML = `
+        function createCharityCard(charity) {
+            const currentDate = new Date();
+            const expiryDate = new Date(charity.expiryDate);
+            const daysLeft = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24));
+
+            const card = document.createElement('div');
+            card.className = 'col-md-4';
+            card.innerHTML = `
             <div class="card">
                 <div class="card-body">
                     <div class="card-header bg-success text-white">
@@ -155,43 +258,58 @@
                 </div>
             </div>
         `;
-        return card;
-    }
-
-    function donate(charityName, goalAmount) {
-        const amount = prompt(`Enter donation amount for ${charityName} (Goal: ₹${goalAmount}):`);
-        if (amount) {
-            alert(`Thank you for your donation of ₹${amount} to ${charityName}!`);
-            // Here you would typically handle the donation processing
+            return card;
         }
-    }
 
-    function viewNGODetails(ngoName) {
-        alert(`Viewing details for NGO: ${ngoName}`);
-        // Implement NGO details view
-    }
+        // Keep existing functions
+        function donate(charityName, goalAmount) {
+            const amount = prompt(`Enter donation amount for ${charityName} (Goal: ₹${goalAmount}):`);
+            if (amount) {
+                alert(`Thank you for your donation of ₹${amount} to ${charityName}!`);
+            }
+        }
 
-    function viewMoreCharities(ngo) {
-        const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
-        localStorage.setItem('selectedNgo', ngo);
-        window.location.href = 'charity.html';
-    }
+        function viewNGODetails(ngoName) {
+            alert(`Viewing details for NGO: ${ngoName}`);
+        }
 
-    // Event listeners
-    document.getElementById('searchInput').addEventListener('keyup', () => {
-        const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
-        const charities = JSON.parse(localStorage.getItem('charities'))?.null || [];
-        displayContent(ngos, charities);
-    });
+        function viewMoreCharities(ngoName) {
+            localStorage.setItem('selectedNgo', ngoName);
+            window.location.href = 'charity.html';
+        }
 
-    document.getElementById('filterSelect').addEventListener('change', () => {
-        const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
-        const charities = JSON.parse(localStorage.getItem('charities'))?.null || [];
-        displayContent(ngos, charities);
-    });
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('keyup', () => {
+            currentPage = 1; // Reset to first page on search
+            loadContent();
+        });
 
-    window.onload = loadContent;
-</script>
+        document.getElementById('filterSelect').addEventListener('change', () => {
+            currentPage = 1; // Reset to first page on filter change
+            loadContent();
+        });
+
+        document.getElementById('itemsPerPage').addEventListener('change', (e) => {
+            itemsPerPage = parseInt(e.target.value);
+            currentPage = 1; // Reset to first page when changing items per page
+            loadContent();
+        });
+
+        document.getElementById('prevPage').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                loadContent();
+            }
+        });
+
+        document.getElementById('nextPage').addEventListener('click', () => {
+            currentPage++;
+            loadContent();
+        });
+
+        window.onload = loadContent;
+    </script>
 
 </body>
+
 </html>

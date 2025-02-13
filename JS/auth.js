@@ -122,6 +122,9 @@ function registerUser() {
         };
 
         NGOs.push(newNgo);
+        
+        localStorage.setItem("NGO", JSON.stringify(NGOs));
+
         localStorage.setItem("loggedInNgo", newNgo.name);
 
         alert("NGO registered successfully with NGO ID: " + ngoId);
