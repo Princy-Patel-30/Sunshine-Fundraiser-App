@@ -6,7 +6,7 @@
   <title>Sunshine-fundraiser</title>
   
 </head>
-<!-- head -->
+
 <body>
   <div class="container">
     <div class="form-container" id="login-form">
@@ -19,10 +19,14 @@
       <select name="role" id="login-role">
         <option value="User">User</option>
         <option value="NGO">NGO</option>
+        <option value="Admin">Admin</option>
       </select><br><br>
 
       <button onclick="loginUser()">Login</button>
       <p>Don't have an account? <a href="#" onclick="toggleForm()">Sign Up</a></p>
+    </div>
+
+    
     </div>
 
     <div class="form-container" id="signup-form" style="display: none;">
@@ -36,6 +40,7 @@
       <select name="role" id="signup-role">
         <option value="User">User</option>
         <option value="NGO">NGO</option>
+        
       </select><br><br>
 
 
