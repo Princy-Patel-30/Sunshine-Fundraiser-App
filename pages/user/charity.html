@@ -47,7 +47,7 @@
 
         <!-- Navigation buttons -->
         <div class="nav-buttons">
-            <button onclick="goToMyCharities()" class="btn btn-primary">Manage My Charities</button>
+            <button onclick="goToMyCharities()" class="btn btn-primary">Back</button>
             <button onclick="logout()" class="btn btn-danger">Logout</button>
         </div>
 
@@ -59,6 +59,10 @@
         // Get logged-in user details
         const loggedInUser = localStorage.getItem("loggedInUser");
         const userDisplayName = localStorage.getItem("userDisplayName");
+        // console.log(loggedInUser);
+        // console.log(userDisplayName);
+        
+        
 
         function loadCharities() {
             // Get charities from localStorage
