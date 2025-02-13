@@ -66,6 +66,7 @@
 
   <script>
     function loadNgos() {
+            
       // Changed from 'NGO' to 'ngos'
       const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
       const charities = JSON.parse(localStorage.getItem('charities')) || {};
@@ -80,6 +81,7 @@
         }
         ngoCharities[charity.ngoname].push(charity);
       });
+
 
       // Create cards for each NGO
       ngos.forEach((ngo) => {

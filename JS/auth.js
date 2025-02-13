@@ -65,7 +65,8 @@ function loginUser() {
     } else if (role === "NGO") {
         let ngos = JSON.parse(localStorage.getItem("NGO")) || [];
         let foundNgo = ngos.find(ngo => ngo.name === username && ngo.password === password);
-
+        console.log(foundNgo.name);
+        
         if (foundNgo) {
             localStorage.setItem("loggedInNgo", foundNgo.name);
             alert("NGO Login Successful!");
