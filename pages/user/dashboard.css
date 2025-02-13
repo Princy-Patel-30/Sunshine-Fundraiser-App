@@ -1,0 +1,74 @@
+       /* Existing styles */
+       body {
+        background-color: #dcecfc;
+    }
+
+    .card {
+        margin: 20px;
+        height: 100%;
+    }
+
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .login-signup {
+        position: absolute;
+     
+        top: 20px;
+        right: 20px;
+    }
+
+    .card-title {
+        text-align: center;
+    }
+
+    .card-text {
+        text-align: justify;
+    }
+
+    .progress {
+        height: 20px;
+        margin: 10px 0;
+    }
+
+    .search-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    /* New pagination styles */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px 0;
+        gap: 10px;
+    }
+
+    .page-button {
+        padding: 5px 15px;
+        border: 1px solid #007bff;
+        background-color: white;
+        color: #007bff;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .page-button.active {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .page-button:disabled {
+        border-color: #ccc;
+        color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .items-per-page {
+        margin-left: 20px;
+    }

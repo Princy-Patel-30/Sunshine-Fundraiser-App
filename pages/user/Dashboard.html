@@ -7,82 +7,7 @@
     <title>NGO & Charity Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        /* Existing styles */
-        body {
-            background-color: #021c37;
-        }
-
-        .card {
-            margin: 20px;
-            height: 100%;
-        }
-
-        .card-body {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .login-signup {
-            position: absolute;
-         
-            top: 20px;
-            right: 20px;
-        }
-
-        .card-title {
-            text-align: center;
-        }
-
-        .card-text {
-            text-align: justify;
-        }
-
-        .progress {
-            height: 20px;
-            margin: 10px 0;
-        }
-
-        .search-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        /* New pagination styles */
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-            gap: 10px;
-        }
-
-        .page-button {
-            padding: 5px 15px;
-            border: 1px solid #007bff;
-            background-color: white;
-            color: #007bff;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .page-button.active {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .page-button:disabled {
-            border-color: #ccc;
-            color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .items-per-page {
-            margin-left: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 
 <body>
@@ -90,19 +15,18 @@
     <div class="container">
         <h1 class="text-center my-4">Your 1 Rupee can save life!</h1>
         <h1 class="text-center my-4">NGO & Charity Dashboard</h1>
-
+    
         <div class="login-signup">
-            <a href="../landing.html" class="btn btn-secondary">Logout</a>
+            <a href="../login.html" class="btn btn-secondary">Logout</a>
         </div>
-
+        
         <div class="search-container">
             <div class="form-group flex-grow-1">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
                     </div>
-                    <input type="text" id="searchInput" class="form-control"
-                        placeholder="Search by NGO or charity name...">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by NGO or charity name...">
                 </div>
             </div>
             <select class="form-control" id="filterSelect" style="width: auto;">
@@ -110,25 +34,135 @@
                 <option value="ngo">NGOs Only</option>
                 <option value="charity">Charities Only</option>
             </select>
-            <div class="items-per-page">
-                <select class="form-control" id="itemsPerPage">
-                    <option value="6">6 per page</option>
-                    <option value="9">9 per page</option>
-                    <option value="12">12 per page</option>
-                </select>
-            </div>
         </div>
-
-        <div class="row g-4" id="cardsContainer"></div>
-
-
-        <div class="pagination-container">
-            <button id="prevPage" class="page-button">Previous</button>
-            <div id="pageNumbers"></div>
-            <button id="nextPage" class="page-button">Next</button>
-        </div>
+        
+        <div class="row" id="cardsContainer"></div>
     </div>
+    
+    <script>
+        function loadContent() {
+            const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
+            const charities = JSON.parse(localStorage.getItem('charities'))?.null || [];
+            displayContent(ngos, charities);
+        }
+    
+        function displayContent(ngos, charities) {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filterValue = document.getElementById('filterSelect').value;
+    
+            // Display NGOs if filter is 'all' or 'ngo'
+            if (filterValue === 'all' || filterValue === 'ngo') {
+                ngos.forEach((ngo, index) => {
+                    if (ngo.name.toLowerCase().includes(searchTerm) || 
+                        ngo.description.toLowerCase().includes(searchTerm)) {
+                        const card = createNGOCard(ngo, index);
+                        container.appendChild(card);
+                    }
+                });
+            }
+    
+            // Display Charities if filter is 'all' or 'charity'
+            if (filterValue === 'all' || filterValue === 'charity') {
+                charities.forEach((charity, index) => {
+                    if (charity.name.toLowerCase().includes(searchTerm) || 
+                        charity.description.toLowerCase().includes(searchTerm)) {
+                        const card = createCharityCard(charity, index);
+                        container.appendChild(card);
+                    }
+                });
+            }
+        }
+    
+        function createNGOCard(ngo, index) {
+            const card = document.createElement('div');
+            card.className = 'col-md-4';
+            card.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0">NGO: ${ngo.name}</h5>
+                        </div>
+                        <p class="card-text mt-3">${ngo.description}</p>
+                        <div class="mt-auto">
+                            <button class="btn btn-dark mt-3" onclick="viewNGODetails('${ngo.name}')">View Details</button>
+                            <button class="btn btn-info mt-3" onclick="viewMoreCharities(${index})">View Charities</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+    
+        function createCharityCard(charity, index) {
+            const currentDate = new Date();
+            const expiryDate = new Date(charity.expiryDate);
+            const daysLeft = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24));
+            
+            const card = document.createElement('div');
+            card.className = 'col-md-4';
+            card.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">Charity: ${charity.name}</h5>
+                        </div>
+                        <p class="card-text mt-3">${charity.description}</p>
+                        <p class="text-muted">By NGO: ${charity.ngoname}</p>
+                        <div class="goal-info">
+                            <p class="mb-1">Goal: ₹${charity.goalAmount}</p>
+                            <p class="mb-1">Days Left: ${daysLeft}</p>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: 25%"
+                                    aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <button class="btn btn-success mt-3" onclick="donate('${charity.name}', ${charity.goalAmount})">Donate Now</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+    
+        function donate(charityName, goalAmount) {
+            const amount = prompt(`Enter donation amount for ${charityName} (Goal: ₹${goalAmount}):`);
+            if (amount) {
+                alert(`Thank you for your donation of ₹${amount} to ${charityName}!`);
+                // Here you would typically handle the donation processing
+            }
+        }
+    
+        function viewNGODetails(ngoName) {
+            alert(`Viewing details for NGO: ${ngoName}`);
+            // Implement NGO details view
+        }
+    
+        function viewMoreCharities(ngoIndex) {
+            const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
+            const selectedNgo = ngos[ngoIndex];
+            localStorage.setItem('selectedNgo', JSON.stringify(selectedNgo));
+            window.location.href = 'charity.html';
+        }
+    
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('keyup', () => {
+            const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
+            const charities = JSON.parse(localStorage.getItem('charities'))?.null || [];
+            displayContent(ngos, charities);
+        });
+    
+        document.getElementById('filterSelect').addEventListener('change', () => {
+            const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
+            const charities = JSON.parse(localStorage.getItem('charities'))?.null || [];
+            displayContent(ngos, charities);
+        });
+    
+        window.onload = loadContent;
+    </script>
+    
+    </body>
+    </html>
 
-</body>
-
-</html>
