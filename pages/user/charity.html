@@ -57,58 +57,53 @@
 
     <script>
         // Get logged-in user details
+        
+        
         const loggedInUser = localStorage.getItem("loggedInUser");
         const userDisplayName = localStorage.getItem("userDisplayName");
         // console.log(loggedInUser);
         // console.log(userDisplayName);
         
-        
 
         function loadCharities() {
-            // Get charities from localStorage
-            const charitiesData = JSON.parse(localStorage.getItem('charities')) || {};
-            const charityList = document.getElementById('charityList');
-
-            // Clear previous content
-            charityList.innerHTML = '';
-
-            // Flatten all charities from object into an array
-            let allCharities = Object.values(charitiesData).flat();
-
-            if (allCharities.length === 0) {
-                charityList.innerHTML = `
-          <div class="alert alert-info" role="alert">
-            No active charity campaigns available at the moment.
-          </div>
+                // Get the selected NGO name from localStorage
+                let selectedNgo = localStorage.getItem('selectedNgo');
+                // Ensure selectedNgo exists and is properly formatted
+                if (!selectedNgo) {
+                    document.getElementById('charityList').innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                No NGO selected. Please go back and select an NGO.
+            </div>
         `;
-                return;
-            }
-
-            // Group charities by NGO
-            const groupedCharities = {};
-            allCharities.forEach(charity => {
-                if (!charity.ngoname) return; // Ignore charities without an NGO name
-                if (!groupedCharities[charity.ngoname]) {
-                    groupedCharities[charity.ngoname] = [];
+                    return;
                 }
-                groupedCharities[charity.ngoname].push(charity);
-            });
 
-            // Create and append charity sections for each NGO
-            for (const [ngoName, ngoCharities] of Object.entries(groupedCharities)) {
-                // Create NGO section
-                const ngoSection = document.createElement('div');
-                ngoSection.className = 'mb-4';
-                ngoSection.innerHTML = `
-          <h3 class="mb-3 text-primary">${ngoName}</h3>
-          <div class="row" id="ngo-${ngoName.replace(/\s+/g, '-')}"></div>
+                // Get charities from localStorage
+                const charitiesData = JSON.parse(localStorage.getItem('charities')) || {};
+
+                // Convert keys to lowercase to handle case sensitivity
+                let allCharities = Object.values(charitiesData).flat();
+                //selectedNgo = selectedNgo.trim().toLowerCase();  // Normalize NGO name
+
+                // ✅ Filter charities where `ngoname` matches `selectedNgo`
+                let selectedNgoCharities = allCharities.filter(charity =>
+                    charity.ngoname === selectedNgo
+                );
+
+                const charityList = document.getElementById('charityList');
+                charityList.innerHTML = ''; // Clear previous content
+
+                if (selectedNgoCharities.length === 0) {
+                    charityList.innerHTML = `
+            <div class="alert alert-info" role="alert">
+                No active charity campaigns available for ${selectedNgo}.
+            </div>
         `;
-                charityList.appendChild(ngoSection);
+                    return;
+                }
 
-                const ngoContainer = ngoSection.querySelector('.row');
-
-                // Add charities for this NGO
-                ngoCharities.forEach(charity => {
+                // ✅ Create and append charity cards for the selected NGO
+                selectedNgoCharities.forEach(charity => {
                     const expiryDate = new Date(charity.expiryDate);
                     const currentDate = new Date();
                     const daysLeft = Math.ceil((expiryDate - currentDate) / (1000 * 60 * 60 * 24));
@@ -117,45 +112,46 @@
                     card.className = 'col-md-6 mb-4';
                     card.innerHTML = `
             <div class="card h-100">
-              <div class="card-body">
-                <h5 class="card-title">${charity.name}</h5>
-                <p class="card-text">${charity.description}</p>
-                <div class="charity-details">
-                  <div class="row mb-2">
-                    <div class="col-6">
-                      <strong>Goal Amount:</strong>
-                      <div>₹${Number(charity.goalAmount).toLocaleString()}</div>
+                <div class="card-body">
+                    <h5 class="card-title">${charity.name}</h5>
+                    <p class="card-text">${charity.description}</p>
+                    <div class="charity-details">
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <strong>Goal Amount:</strong>
+                                <div>₹${Number(charity.goalAmount).toLocaleString()}</div>
+                            </div>
+                            <div class="col-6">
+                                <strong>Days Left:</strong>
+                                <div class="badge badge-${daysLeft > 30 ? 'success' : 'warning'}">
+                                    ${daysLeft} days
+                                </div>
+                            </div>
+                        </div>
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0"
+                                aria-valuemax="100">
+                                0%
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <strong>Expiry Date:</strong>
+                            <span>${expiryDate.toLocaleDateString()}</span>
+                        </div>
                     </div>
-                    <div class="col-6">
-                      <strong>Days Left:</strong>
-                      <div class="badge badge-${daysLeft > 30 ? 'success' : 'warning'}">
-                        ${daysLeft} days
-                      </div>
-                    </div>
-                  </div>
-                  <div class="progress mt-2">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0"
-                      aria-valuemax="100">
-                      0%
-                    </div>
-                  </div>
-                  <div class="mt-3">
-                    <strong>Expiry Date:</strong>
-                    <span>${expiryDate.toLocaleDateString()}</span>
-                  </div>
                 </div>
-              </div>
-              <div class="card-footer text-center">
-                <button class="btn btn-primary" onclick="donate('${charity.name}', ${charity.goalAmount})">
-                  <i class="fas fa-hand-holding-heart"></i> Donate Now
-                </button>
-              </div>
+                <div class="card-footer text-center">
+                    <button class="btn btn-primary" onclick="donate('${charity.name}', ${charity.goalAmount})">
+                        <i class="fas fa-hand-holding-heart"></i> Donate Now
+                    </button>
+                </div>
             </div>
-          `;
-                    ngoContainer.appendChild(card);
+        `;
+                    charityList.appendChild(card);
                 });
             }
-        }
+
+
 
         function donate(charityName, goalAmount) {
             const amount = prompt(`Enter donation amount for ${charityName} (Goal: ₹${goalAmount.toLocaleString()}):`);

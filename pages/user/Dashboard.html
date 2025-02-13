@@ -118,7 +118,7 @@
                     <p class="card-text mt-3">${ngo.description}</p>
                     <div class="mt-auto">
                         <button class="btn btn-dark mt-3" onclick="viewNGODetails('${ngo.name}')">View Details</button>
-                        <button class="btn btn-info mt-3" onclick="viewMoreCharities(${index})">View Charities</button>
+                        <button class="btn btn-info mt-3" onclick="viewMoreCharities('${ngo.name}')">View Charities</button>
                     </div>
                 </div>
             </div>
@@ -171,10 +171,9 @@
         // Implement NGO details view
     }
 
-    function viewMoreCharities(ngoIndex) {
+    function viewMoreCharities(ngo) {
         const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
-        const selectedNgo = ngos[ngoIndex];
-        localStorage.setItem('selectedNgo', JSON.stringify(selectedNgo));
+        localStorage.setItem('selectedNgo', ngo);
         window.location.href = 'charity.html';
     }
 
