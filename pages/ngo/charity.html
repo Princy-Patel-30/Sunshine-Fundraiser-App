@@ -31,18 +31,30 @@
       display: flex;
       gap: 10px;
     }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 
 <body>
-
   <div class="container">
-    <h1 class="text-center my-4" id="ngoName">${}</h1>
+    <h1 class="text-center my-4" id="ngoName"></h1>
 
-    <h2 class="my-4">Charities for <span id="ngoDisplayName"></span></h2>
-    <ul id="charityList" class="list-group"></ul>
+    <!-- Navigation buttons -->
+    <div class="nav-buttons">
+      <div>
+        
+        <button onclick="goToMyCharities()" class="btn btn-primary">Manage My Charities</button>
+      </div>
+      <button onclick="logout()" class="btn btn-danger">Logout</button>
+    </div>
 
-    <a href="Dashboard.html" class="btn btn-secondary mt-3">Back to Dashboard</a>
+    <h2 class="my-4">All Charities</h2>
+    <div id="charityList"></div>
   </div>
 
   <script>
@@ -51,66 +63,70 @@
     const ngoDisplayName = localStorage.getItem("ngoDisplayName");
 
     // Update the NGO Name in Dashboard
-    document.getElementById('ngoName').textContent = ngoDisplayName + " Dashboard";
-    document.getElementById('ngoDisplayName').textContent = loggedInNgo;
+    document.getElementById('ngoName').textContent = "Welcome, " + ngoDisplayName;
 
-    // Load existing charities for the logged-in NGO
+    function goToMyCharities() {
+      window.location.href = "Dashboard.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInNgo");
+      localStorage.removeItem("ngoDisplayName");
+      window.location.href = "../landing.html";
+    }
+
+    // Load all charities
     function loadCharities() {
-      const charities = JSON.parse(localStorage.getItem('charities')) || {};
+      const charitiesData = JSON.parse(localStorage.getItem('charities')) || {};
       const charityList = document.getElementById('charityList');
       charityList.innerHTML = '';
 
-      if (charities[ngoId]) {
-        charities[ngoId].forEach((charity, index) => {
-          const listItem = document.createElement('li');
-          listItem.className = 'charity-item';
+      // Get all charities
+      let allCharities = charitiesData["null"] || [];
 
-          listItem.innerHTML = `
-                    <div class="charity-details">
-                        <strong>${charity.name}</strong> <br>
-                        <small>${charity.description}</small> <br>
-                        <small><strong>Goal:</strong> $${charity.goalAmount} | <strong>Expiry:</strong> ${charity.expiryDate}</small>
-                    </div>
-                    <div class="charity-actions">
-                        <button class="btn btn-warning btn-sm" onclick="editCharity(${index})">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteCharity(${index})">Delete</button>
-                    </div>
-                `;
-
-          charityList.appendChild(listItem);
-        });
+      if (allCharities.length === 0) {
+        charityList.innerHTML = '<p class="text-center text-muted">No charities available.</p>';
+        return;
       }
-    }
 
-    // Edit charity
-    function editCharity(index) {
-      const charities = JSON.parse(localStorage.getItem('charities')) || {};
-      const charity = charities[ngoId][index];
+      // Group charities by NGO
+      const groupedCharities = {};
+      allCharities.forEach(charity => {
+        if (!groupedCharities[charity.ngoname]) {
+          groupedCharities[charity.ngoname] = [];
+        }
+        groupedCharities[charity.ngoname].push(charity);
+      });
 
-      // Redirect to edit page (if needed) or modify existing charity in localStorage
-      document.getElementById('charityName').value = charity.name;
-      document.getElementById('charityDescription').value = charity.description;
-      document.getElementById('goalAmount').value = charity.goalAmount;
-      document.getElementById('expiryDate').value = charity.expiryDate;
+      // Display charities grouped by NGO
+      for (const [ngoName, charities] of Object.entries(groupedCharities)) {
+        const ngoSection = document.createElement('div');
+        ngoSection.className = 'mb-4';
+        ngoSection.innerHTML = `<h3 class="mb-3">${ngoName}</h3>`;
 
-      // Remove charity from the list for editing
-      charities[ngoId].splice(index, 1);
-      localStorage.setItem('charities', JSON.stringify(charities));
-      loadCharities();
-    }
+        charities.forEach(charity => {
+          const charityItem = document.createElement('div');
+          charityItem.className = 'charity-item';
+          charityItem.innerHTML = `
+                        <div class="charity-details">
+                            <strong>${charity.name}</strong> <br>
+                            <small>${charity.description}</small> <br>
+                            <small>
+                                <strong>Goal:</strong> $${charity.goalAmount} | 
+                                <strong>Expiry:</strong> ${charity.expiryDate}
+                            </small>
+                        </div>
+                    `;
+          ngoSection.appendChild(charityItem);
+        });
 
-    // Delete charity
-    function deleteCharity(index) {
-      const charities = JSON.parse(localStorage.getItem('charities')) || {};
-      charities[ngoId].splice(index, 1);
-      localStorage.setItem('charities', JSON.stringify(charities));
-      loadCharities();
+        charityList.appendChild(ngoSection);
+      }
     }
 
     // Initial load
     loadCharities();
   </script>
-
 </body>
 
 </html>

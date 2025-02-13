@@ -12,15 +12,32 @@
     }
 
     .card {
-      margin: 20px;
+      margin: 20px 0;
       height: 100%;
-      /* Ensures all cards take the same height */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
     }
 
     .card-body {
+      display: flex;
+      flex-direction: column;
+    }
 
-      justify-content: space-between;
-      /* Distributes space evenly */
+    .charity-item {
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      background-color: #f8f9fa;
+    }
+
+    .charity-goal {
+      color: #28a745;
+      font-weight: 500;
     }
 
     .login-signup {
@@ -28,47 +45,89 @@
       top: 20px;
       right: 20px;
     }
+
+    .page-title {
+      color: #2c3e50;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #eee;
+    }
   </style>
 </head>
 
 <body>
-
   <div class="container">
-    <h1 class="text-center my-4">NGO Dashboard</h1>
+    <h1 class="text-center my-4 page-title">Welcome to NGO Charity Platform</h1>
     <div class="login-signup">
-      <a href="login.html" class="btn btn-secondary">Login/Sign Up</a>
+      <a href="login.html" class="btn btn-primary">Login/Sign Up</a>
     </div>
     <div class="row" id="ngoCardsContainer"></div>
   </div>
 
   <script>
     function loadNgos() {
+      // Changed from 'NGO' to 'ngos'
       const ngos = JSON.parse(localStorage.getItem('ngos')) || [];
+      const charities = JSON.parse(localStorage.getItem('charities')) || {};
+      const allCharities = charities["null"] || [];
       const container = document.getElementById('ngoCardsContainer');
+
+      // Group charities by NGO
+      const ngoCharities = {};
+      allCharities.forEach(charity => {
+        if (!ngoCharities[charity.ngoname]) {
+          ngoCharities[charity.ngoname] = [];
+        }
+        ngoCharities[charity.ngoname].push(charity);
+      });
+
+      // Create cards for each NGO
       ngos.forEach((ngo) => {
+        const ngoCharityList = ngoCharities[ngo.name] || [];
+
         const card = document.createElement('div');
-        card.className = 'col-md-4';
+        card.className = 'col-md-4 mb-4';
         card.innerHTML = `
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">${ngo.name}</h5>
-                        <p class="card-text">${ngo.description}</p>
-                        <br>
-                        <br>
-                        <h6 class="card-subtitle mb-2 text-muted">Charities:</h6>
-                        <ul class="list-group">
-                            ${ngo.charities.map(charity => `<li class="list-group-item">${charity}</li>`).join('')}
-                        </ul>
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title text-primary">${ngo.name}</h4>
+                            <p class="card-text text-muted mb-4">${ngo.email}</p>
+                            
+                            <h5 class="mb-3">Active Charities</h5>
+                            <div class="charity-list">
+                                ${ngoCharityList.length > 0 ?
+            ngoCharityList.map(charity => `
+                                        <div class="charity-item">
+                                            <h6 class="mb-2">${charity.name}</h6>
+                                            <p class="small mb-2">${charity.description}</p>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="charity-goal">Goal: $${charity.goalAmount}</span>
+                                                <small class="text-muted">Expires: ${charity.expiryDate}</small>
+                                            </div>
+                                        </div>
+                                    `).join('') :
+            '<p class="text-muted">No active charities</p>'
+          }
+                            </div>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
         container.appendChild(card);
       });
+
+      // Show message if no NGOs exist
+      if (ngos.length === 0) {
+        container.innerHTML = `
+                    <div class="col-12 text-center">
+                        <h3 class="text-muted">No NGOs registered yet</h3>
+                    </div>
+                `;
+      }
     }
 
+    // Load NGOs when page loads
     window.onload = loadNgos;
   </script>
-
 </body>
 
 </html>

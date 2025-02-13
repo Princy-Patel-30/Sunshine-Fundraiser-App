@@ -35,9 +35,12 @@
 </head>
 
 <body>
-
   <div class="container">
     <h1 class="text-center my-4">NGO Dashboard</h1>
+    <div id="ngoInfo" class="alert alert-info mb-4">
+      <!-- NGO info will be displayed here -->
+    </div>
+
     <form id="charityForm">
       <div class="form-group">
         <label for="charityName">Charity Name</label>
@@ -59,103 +62,130 @@
       <button type="button" class="btn btn-success ml-2" onclick="goToCharity()">Done</button>
     </form>
 
-    <h2 class="my-4">Existing Charities</h2>
+    <h2 class="my-4">Your Charities</h2>
     <ul id="charityList" class="list-group"></ul>
   </div>
 
   <script>
-    const ngoId = new URLSearchParams(window.location.search).get('id');
+    // Get logged in NGO information
+    const loggedInNgo = localStorage.getItem("ngoDisplayName");
+
+    // Display NGO information
+    document.getElementById('ngoInfo').innerHTML = `
+            <strong>Logged in as:</strong> ${loggedInNgo}
+        `;
 
     // Redirect to charity.html
     function goToCharity() {
       window.location.href = 'charity.html';
     }
 
-    // Load existing charities for the NGO
+    // Load existing charities for the current NGO
     function loadCharities() {
-      const charities = JSON.parse(localStorage.getItem('charities')) || {};
+      const charitiesData = JSON.parse(localStorage.getItem('charities')) || {};
       const charityList = document.getElementById('charityList');
       charityList.innerHTML = '';
 
-      if (charities[ngoId]) {
-        charities[ngoId].forEach((charity, index) => {
-          const listItem = document.createElement('li');
-          listItem.className = 'charity-item';
+      // Get all charities
+      let allCharities = charitiesData["null"] || [];
 
-          listItem.innerHTML = `
+      // Filter charities for current NGO
+      let ngoCharities = allCharities.filter(charity => charity.ngoname === loggedInNgo);
+
+      if (ngoCharities.length === 0) {
+        charityList.innerHTML = '<p class="text-muted">No charities added yet.</p>';
+        return;
+      }
+
+      ngoCharities.forEach((charity, index) => {
+        const listItem = document.createElement('li');
+        listItem.className = 'charity-item';
+        listItem.innerHTML = `
                     <div class="charity-details">
                         <strong>${charity.name}</strong> <br>
                         <small>${charity.description}</small> <br>
                         <small><strong>Goal:</strong> $${charity.goalAmount} | <strong>Expiry:</strong> ${charity.expiryDate}</small>
                     </div>
                     <div class="charity-actions">
-                        <button class="btn btn-warning btn-sm" onclick="editCharity(${index})">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteCharity(${index})">Delete</button>
+                        <button class="btn btn-warning btn-sm" onclick="editCharity('${charity.name}')">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteCharity('${charity.name}')">Delete</button>
                     </div>
                 `;
-
-          charityList.appendChild(listItem);
-        });
-      }
+        charityList.appendChild(listItem);
+      });
     }
 
     // Add new charity
     document.getElementById('charityForm').addEventListener('submit', function (event) {
       event.preventDefault();
 
-      const charityName = document.getElementById('charityName').value;
-      const charityDescription = document.getElementById('charityDescription').value;
-      const goalAmount = document.getElementById('goalAmount').value;
-      const expiryDate = document.getElementById('expiryDate').value;
-      const loggedInNgo = localStorage.getItem("ngoDisplayName");
-
       const charityData = {
-        name: charityName,
-        description: charityDescription,
-        goalAmount: goalAmount,
-        expiryDate: expiryDate,
+        name: document.getElementById('charityName').value,
+        description: document.getElementById('charityDescription').value,
+        goalAmount: document.getElementById('goalAmount').value,
+        expiryDate: document.getElementById('expiryDate').value,
         ngoname: loggedInNgo
       };
 
-      const charities = JSON.parse(localStorage.getItem('charities')) || {};
-      if (!charities[ngoId]) {
-        charities[ngoId] = [];
+      let charitiesData = JSON.parse(localStorage.getItem('charities')) || {};
+      if (!charitiesData["null"]) {
+        charitiesData["null"] = [];
       }
-      charities[ngoId].push(charityData);
-      localStorage.setItem('charities', JSON.stringify(charities));
 
-      loadCharities();
+      // Add new charity to the array
+      charitiesData["null"].push(charityData);
+      localStorage.setItem('charities', JSON.stringify(charitiesData));
+
+      // Reset form and reload charities
       document.getElementById('charityForm').reset();
+      loadCharities();
     });
 
     // Edit charity
-    function editCharity(index) {
-      const charities = JSON.parse(localStorage.getItem('charities')) || {};
-      const charity = charities[ngoId][index];
+    function editCharity(charityName) {
+      let charitiesData = JSON.parse(localStorage.getItem('charities')) || {};
+      let allCharities = charitiesData["null"] || [];
 
-      document.getElementById('charityName').value = charity.name;
-      document.getElementById('charityDescription').value = charity.description;
-      document.getElementById('goalAmount').value = charity.goalAmount;
-      document.getElementById('expiryDate').value = charity.expiryDate;
+      // Find charity index
+      const charityIndex = allCharities.findIndex(c =>
+        c.name === charityName && c.ngoname === loggedInNgo
+      );
 
-      // Remove charity from the list for editing
-      charities[ngoId].splice(index, 1);
-      localStorage.setItem('charities', JSON.stringify(charities));
-      loadCharities();
+      if (charityIndex !== -1) {
+        const charity = allCharities[charityIndex];
+
+        // Populate form
+        document.getElementById('charityName').value = charity.name;
+        document.getElementById('charityDescription').value = charity.description;
+        document.getElementById('goalAmount').value = charity.goalAmount;
+        document.getElementById('expiryDate').value = charity.expiryDate;
+
+        // Remove charity for editing
+        allCharities.splice(charityIndex, 1);
+        charitiesData["null"] = allCharities;
+        localStorage.setItem('charities', JSON.stringify(charitiesData));
+
+        loadCharities();
+      }
     }
 
     // Delete charity
-    function deleteCharity(index) {
-      const charities = JSON.parse(localStorage.getItem('charities')) || {};
-      charities[ngoId].splice(index, 1);
-      localStorage.setItem('charities', JSON.stringify(charities));
+    function deleteCharity(charityName) {
+      let charitiesData = JSON.parse(localStorage.getItem('charities')) || {};
+      let allCharities = charitiesData["null"] || [];
+
+      // Filter out the charity to delete
+      charitiesData["null"] = allCharities.filter(charity =>
+        !(charity.name === charityName && charity.ngoname === loggedInNgo)
+      );
+
+      localStorage.setItem('charities', JSON.stringify(charitiesData));
       loadCharities();
     }
 
     // Initial load
     loadCharities();
   </script>
-
 </body>
 
 </html>
