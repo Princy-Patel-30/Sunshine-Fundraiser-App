@@ -131,8 +131,8 @@
               <input type="text" class="form-control" id="ngoName" required>
             </div>
             <div class="form-group">
-              <label>Email</label>
-              <input type="email" class="form-control" id="ngoEmail" required>
+              <label>Description</label>
+              <input type="text" class="form-control" id="ngoDesc" required>
             </div>
           </form>
         </div>
@@ -252,6 +252,7 @@
     }
 
     function editCharity(index) {
+      console.log(index)
       let charitiesData = JSON.parse(localStorage.getItem('charities')) || {};
       let charity = charitiesData["null"][index];
 
@@ -264,7 +265,7 @@
       document.getElementById('charityExpiry').value = charity.expiryDate;
 
       document.getElementById('charityModal').style.display = 'block';
-      saveCharity();
+      //saveCharity();
     }
 
     function closeCharityModal() {
@@ -314,7 +315,7 @@
         const listItem = document.createElement('li');
         listItem.className = 'list-item';
         listItem.innerHTML = `
-                    <div><strong>${ngo.name}</strong> - ${ngo.email}</div>
+                    <div><strong>${ngo.name}</strong> - ${ngo.description}</div>
                     <div>
                         <button class="btn btn-info btn-sm mr-2" onclick="editNgo(${index})">Edit</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteNgo(${index})">Delete</button>
@@ -337,7 +338,7 @@
       document.getElementById('ngoModalTitle').textContent = 'Edit NGO';
       document.getElementById('ngoIndex').value = index;
       document.getElementById('ngoName').value = ngo.name;
-      document.getElementById('ngoEmail').value = ngo.email;
+      document.getElementById('ngoDesc').value = ngo.description;
 
       document.getElementById('ngoModal').style.display = 'block';
     }
@@ -350,7 +351,7 @@
       const index = document.getElementById('ngoIndex').value;
       const ngo = {
         name: document.getElementById('ngoName').value,
-        email: document.getElementById('ngoEmail').value
+        description: document.getElementById('ngoDesc').value
       };
 
       let ngos = JSON.parse(localStorage.getItem('ngos')) || [];
