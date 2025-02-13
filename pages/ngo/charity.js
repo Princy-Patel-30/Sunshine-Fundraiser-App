@@ -43,7 +43,7 @@
       for (const [ngoName, charities] of Object.entries(groupedCharities)) {
         const ngoSection = document.createElement('div');
         ngoSection.className = 'mb-4';
-        ngoSection.innerHTML = `<h3 class="mb-3">${ngoName}</h3>`;
+        ngoSection.innerHTML = `<h3 class="mb-3">${ngoDisplayName}</h3>`;
 
         charities.forEach(charity => {
           const charityItem = document.createElement('div');
