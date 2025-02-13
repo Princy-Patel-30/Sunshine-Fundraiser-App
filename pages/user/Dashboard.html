@@ -118,7 +118,8 @@
             </div>
         </div>
 
-        <div class="row" id="cardsContainer"></div>
+        <div class="row g-4" id="cardsContainer"></div>
+
 
         <div class="pagination-container">
             <button id="prevPage" class="page-button">Previous</button>
@@ -182,7 +183,7 @@
             // Update pagination controls
             updatePaginationControls(totalPages);
         }
-
+        
         function updatePaginationControls(totalPages) {
             const pageNumbers = document.getElementById('pageNumbers');
             const prevButton = document.getElementById('prevPage');
@@ -237,7 +238,7 @@
             const card = document.createElement('div');
             card.className = 'col-md-4';
             card.innerHTML = `
-            <div class="card">
+            <div class="card ">
                 <div class="card-body">
                     <div class="card-header bg-success text-white">
                         <h5 class="card-title mb-0">Charity: ${charity.name}</h5>
