@@ -31,17 +31,11 @@
 <script>
     document.getElementById('ngoForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        console.log("hello");
         
         let loggedInNgo = localStorage.getItem("loggedInNgo");
-
-        
-        
-        console.log(loggedInNgo);
-        
-        
         const ngoName = document.getElementById('ngoName').value;
         const ngoDescription = document.getElementById('ngoDescription').value;
+        
         
         if (!loggedInNgo) {
             alert("No NGO is logged in!");
@@ -64,6 +58,10 @@
         let ngoes = JSON.parse(localStorage.getItem('ngos')) || [];
         ngoes.push(ngoData);
         localStorage.setItem('ngos', JSON.stringify(ngoes));
+
+        localStorage.setItem("ngoDisplayName", ngoName);
+        console.log(ngoName);
+        
 
         // Redirect to the dashboard
         window.location.href = 'dashboard.html';

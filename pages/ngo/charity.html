@@ -48,9 +48,10 @@
   <script>
     const ngoId = new URLSearchParams(window.location.search).get('id');
     const loggedInNgo = localStorage.getItem("loggedInNgo");
+    const ngoDisplayName = localStorage.getItem("ngoDisplayName");
 
     // Update the NGO Name in Dashboard
-    document.getElementById('ngoName').textContent = loggedInNgo + " Dashboard";
+    document.getElementById('ngoName').textContent = ngoDisplayName + " Dashboard";
     document.getElementById('ngoDisplayName').textContent = loggedInNgo;
 
     // Load existing charities for the logged-in NGO
