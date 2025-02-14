@@ -46,6 +46,9 @@
         charityList.appendChild(listItem);
       });
     }
+    const ngoDisplayName = localStorage.getItem('ngoDisplayName');
+    console.log(ngoDisplayName);
+    
 
     // Add new charity
     document.getElementById('charityForm').addEventListener('submit', function (event) {

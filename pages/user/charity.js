@@ -3,37 +3,37 @@
  const userDisplayName = localStorage.getItem("userDisplayName");
 
  function loadCharities() {
-     // Get the selected NGO name from localStorage
-     let selectedNgo = localStorage.getItem('selectedNgo');
-     // Ensure selectedNgo exists and is properly formatted
-     if (!selectedNgo) {
-         document.getElementById('charityList').innerHTML = `
-             <div class="col-12">
-                 <div class="alert alert-danger" role="alert">
-                     <i class="fas fa-exclamation-triangle"></i> No NGO selected. Please go back and select an NGO.
-                 </div>
-             </div>
-         `;
-         return;
-     }
+    let selectedNgo = localStorage.getItem('selectedNgo').replace(/"/g, '');
+    if (!selectedNgo) {
+        document.getElementById('charityList').innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> No NGO selected. Please go back and select an NGO.
+                </div>
+            </div>
+        `;
+        return;
+    }
 
-     // Update the NGO name in the header
-     document.getElementById('ngoName').textContent = selectedNgo;
+    document.getElementById('ngoName').textContent = selectedNgo;
 
-     // Get charities from localStorage
-     const charitiesData = JSON.parse(localStorage.getItem('charities')) || {};
+    // Get charities from localStorage and handle the 'null' key
+    const charitiesData = JSON.parse(localStorage.getItem('charities')) || {};
+    let allCharities = charitiesData['null'] || []; // Direct access to the array under 'null' key
 
-     // Convert keys to lowercase to handle case sensitivity
-     let allCharities = Object.values(charitiesData).flat();
+    // Filter charities where `ngoname` matches `selectedNgo`
+    let selectedNgoCharities = allCharities.filter(charity =>
+        charity.ngoname === selectedNgo
+    );
 
-     // Filter charities where `ngoname` matches `selectedNgo`
-     let selectedNgoCharities = allCharities.filter(charity =>
-         charity.ngoname === selectedNgo
-     );
+    console.log("Selected NGO:", selectedNgo);
+    console.log("All Charities:", allCharities);
+    console.log("Filtered Charities:", selectedNgoCharities);
 
      const charityList = document.getElementById('charityList');
      charityList.innerHTML = ''; // Clear previous content
-
+     //console.log(selectedNgo);
+     
      if (selectedNgoCharities.length === 0) {
          charityList.innerHTML = `
              <div class="col-12">
